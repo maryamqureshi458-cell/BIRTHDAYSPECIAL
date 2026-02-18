@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Level 19</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    background:black;
+    font-family:'Cinzel', serif;
+    color:gold;
+    text-align:center;
+    overflow-x:hidden;
+}
+
+/* --- FLOATING DECORATIONS --- */
+.decoration {
+    position: fixed;
+    top: 100%;
+    font-size: 20px;
+    color: gold;
+    opacity: 0.6;
+    z-index: 0;
+    pointer-events: none;
+    animation: floatUp linear infinite;
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    20% { opacity: 0.6; }
+    80% { opacity: 0.6; }
+    100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+}
+
+/* Background Particles */
+body::before{
+    content:"";
+    position:fixed;
+    width:100%;
+    height:100%;
+    background:radial-gradient(circle, rgba(255,215,0,0.08) 1px, transparent 1px);
+    background-size:40px 40px;
+    animation: moveBg 20s linear infinite;
+    z-index:-1;
+}
+
+@keyframes moveBg{
+    from{ background-position:0 0; }
+    to{ background-position:0 1000px; }
+}
+
+/* Landing */
+#home{
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding: 20px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+}
+
+h1{
+    font-size: 50px;
+    animation: glow 2s infinite alternate;
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+h2 { font-weight: 400; font-size: 24px; }
+
+@keyframes glow{
+    from{ text-shadow:0 0 10px gold; }
+    to{ text-shadow:0 0 35px goldenrod; }
+}
+
+button{
+    padding:15px 40px;
+    margin-top:30px;
+    background:gold;
+    border:none;
+    font-size:18px;
+    cursor:pointer;
+    transition:0.3s;
+    font-family: 'Cinzel', serif;
+    color: black;
+    border-radius: 5px;
+}
+
+button:hover{
+    background:darkgoldenrod;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Unlock */
+#unlockSection{
+    display:none;
+    margin-top:100px;
+    padding: 20px;
+    padding-bottom: 50px;
+    position: relative;
+    z-index: 1;
+}
+
+input{
+    padding:15px;
+    width: 80%;
+    max-width: 300px;
+    font-size:18px;
+    background:rgba(0,0,0,0.8);
+    color:gold;
+    border:2px solid gold;
+    font-family: 'Cinzel', serif;
+    text-align: center;
+}
+
+#counter{
+    margin-top:20px;
+    font-size: 16px;
+    color: #b8860b;
+}
+
+/* Letter Container */
+#letterSection{
+    display:none;
+    padding-bottom: 100px;
+    position: relative;
+    z-index: 1;
+}
+
+.letter{
+    display:none;
+    max-width:850px;
+    margin:40px auto;
+    padding:30px;
+    background:rgba(10, 10, 10, 0.95);
+    border:2px solid gold;
+    box-shadow:0 0 30px rgba(255, 215, 0, 0.2);
+    font-size:18px;
+    line-height:1.8;
+    text-align: left; 
+    width: 90%;
+    box-sizing: border-box;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease-out;
+}
+
+.active-letter {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.letter h3 {
+    text-align: center;
+    font-size: 22px;
+    color: gold;
+    margin-top: 0;
+    border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+    padding-bottom: 15px;
+}
+
+/* Lock animation */
+.lock{
+    font-size:40px;
+    animation: shake 0.5s;
+}
+
+@keyframes shake{
+    0%{transform:translateX(0);}
+    25%{transform:translateX(-5px);}
+    50%{transform:translateX(5px);}
+    75%{transform:translateX(-5px);}
+    100%{transform:translateX(0);}
+}
+
+/* Final effect */
+#finalEffect{
+    display:none;
+    margin-top:50px;
+    margin-bottom: 50px;
+    font-size:22px;
+    animation: glow 1s infinite alternate;
+    padding: 20px;
+}
+
+/* Desktop adjustments */
+@media screen and (min-width: 600px) {
+    h1 { font-size: 70px; }
+    h2 { font-size: 30px; }
+    .letter { padding: 40px; font-size: 20px; }
+    #finalEffect { font-size: 26px; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- AUDIO ELEMENTS -->
+<!-- 1. Happy Birthday Instrumental (Plays on load/enter) -->
+<audio id="bgMusic" loop>
+<source src="https://www.soundjay.com/human/sounds/applause-01.mp3" type="audio/mpeg">
+<!-- Note: Replaced with a reliable instrumental link below in script for better quality -->
+</audio>
+
+<!-- 2. Key Press Sound -->
+<audio id="keySound">
+<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_ef4bb9f43e.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 3. Success Chime -->
+<audio id="successSound">
+<source src="https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 4. Typing Effect Sound -->
+<audio id="typingSound">
+<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_ef4bb9f43e.mp3" type="audio/mpeg">
+</audio>
+
+<div id="home">
+<h1>HAPPY BIRTHDAY</h1>
+<h2>LEVEL 19</h2>
+<button onclick="enterLevel()">Enter Your Level</button>
+</div>
+
+<div id="unlockSection">
+<h2>Enter Your Secret Code</h2>
+<!-- Added onkeyup event for typing sound -->
+<input type="text" id="codeInput" onkeyup="playKeySound()" onkeydown="if(event.key==='Enter')unlockLetter()" placeholder="Type code...">
+<button onclick="unlockLetter()">Unlock</button>
+<div id="counter">Unlocked: 0 / 19</div>
+<div id="lockMessage"></div>
+</div>
+
+<div id="letterSection">
+
+<!-- LETTERS START HERE -->
+<div class="letter" id="l1"><h3>The Day You Were Born</h3><div class="content">The day you were born, the world became softer without knowing it. It created a boy who would one day become my peace. Your existence alone is a blessing in my life. I thank Allah for the moment you entered this world. Happy Birthday to the reason my heart feels full.</div></div>
+
+<div class="letter" id="l2"><h3>How You Changed My Life</h3><div class="content">Before you, love felt confusing. After you, it felt safe. You taught me patience, understanding, and calm. You changed my chaos into comfort. My life is better because you’re in it.</div></div>
+
+<div class="letter" id="l3"><h3>Our First Memory</h3><div class="content">I still remember the first time we really talked. The way you smiled, the way you listened. I didn’t know then you would become this important to me. That moment turned into something so beautiful. It was the beginning of us.</div></div>
+
+<div class="letter" id="l4"><h3>19 Things I Love About You</h3><div class="content">1. Your smile<br>2. Your voice<br>3. Your protective nature<br>4. Your honesty<br>5. Your loyalty<br>6. The way you calm me<br>7. Your laugh<br>8. Your late-night talks<br>9. Your ambition<br>10. Your patience<br>11. Your soft side<br>12. Your strength<br>13. Your eyes<br>14. Your confidence<br>15. Your stubbornness<br>16. The way you say my name<br>17. Your kindness<br>18. The way you love me<br>19. Simply you</div></div>
+
+<div class="letter" id="l5"><h3>If I Was There Right Now</h3><div class="content">If I was there at 12 AM, I’d hold your face first. I’d whisper “Happy Birthday” before anyone else. I’d hug you tighter than ever. I’d probably cry a little from happiness. And I wouldn’t let you go all night.</div></div>
+
+<div class="letter" id="l6"><h3>Your Smile</h3><div class="content">Your smile is my favorite sight. It fixes my mood instantly. It makes my heart feel warm and safe. When you smile, the world feels okay. Please never stop smiling like that.</div></div>
+
+<div class="letter" id="l7"><h3>Jealous & Possessive One</h3><div class="content">Okay listen… Yes, I get jealous. Yes, I get possessive. Because you are mine and I’m obsessed with you. And on your birthday, you belong to me even more.</div></div>
+
+<div class="letter" id="l8"><h3>Why I’m Proud of You</h3><div class="content">I’m proud of your hardwork and struggle. I’m proud of your dreams. I’m proud of how you handle responsibilities. You’re stronger than you realize. And I’ll always believe in you.</div></div>
+
+<div class="letter" id="l9"><h3>The Hard Times We Survived</h3><div class="content">We’ve had misunderstandings. We’ve had distance and silence. But we never gave up. We chose each other every time. And that’s what makes us real.</div></div>
+
+<div class="letter" id="l10"><h3>If Distance Didn’t Exist</h3><div class="content">If distance didn’t exist, I’d see you every single day. I’d steal random hugs. I’d annoy you just to hear you laugh. And I’d never sleep without you beside me.</div></div>
+
+<div class="letter" id="l11"><h3>19 Reasons I’m Not Letting You Go</h3><div class="content">Because you’re my comfort. Because you’re my best friend. Because you understand me. Because you respect me. Because you protect me. Because you support me. Because you calm me. Because you motivate me. Because you choose me. Because you’re loyal. Because you’re honest. Because you’re strong. Because you’re soft with me. Because you’re patient. Because you’re growing. Because you’re mine. Because I love you. Because I see my future with you. Because I don’t want anyone else.</div></div>
+
+<div class="letter" id="l12"><h3>Your Hug I Miss</h3><div class="content">I miss your hugs the most. The way you wrap your arms around me. The way everything feels quiet inside them. I feel safest there. I can’t wait to feel that again.</div></div>
+
+<div class="letter" id="l13"><h3>Hard things to love about you</h3><div class="content">You’re stubborn. Sometimes moody. Sometimes overthinking. But even your hard things feel lovable to me. Because they’re part of you.</div></div>
+
+<div class="letter" id="l14"><h3>The Man You’re Becoming</h3><div class="content">You’re not just growing older. You’re becoming wiser. Stronger. More responsible. And I’m so proud to watch you evolve.</div></div>
+
+<div class="letter" id="l15"><h3>Next Birthday Together</h3><div class="content">I wish Next year, no distance. No screens. Just me beside you. Cake on your face. And my hug as your first gift.</div></div>
+
+<div class="letter" id="l16"><h3>“When I Pray for You”</h3><div class="content">Every time I raise my hands in prayer, your name is there. I ask for your success before my own. I ask for your peace before mine. I ask that Allah protects you from everything heavy. On your birthday, my biggest wish is that your life stays blessed and guided.</div></div>
+
+<div class="letter" id="l17"><h3>“The Version of Me You Created”</h3><div class="content">You don’t even realize it, But loving you made me softer. More patient. More mature. You helped me grow into a better version of myself just by being in my life.</div></div>
+
+<div class="letter" id="l18"><h3>“No Matter What”</h3><div class="content">No matter how far you are. No matter how busy life gets. No matter how hard some days feel. I choose you — again and again. Happy Birthday, my always and forever.</div></div>
+
+<div class="letter" id="l19"><h3>Long Distance</h3><div class="content">Distance tests love. But it also proves it. Even miles away, my heart chooses you every day. I miss you, I crave you, I pray for you. Happy Birthday, my love. No matter where we are, I’m yours</div></div>
+
+<div id="finalEffect">
+✨ All 19 Letters Unlocked ✨ <br><br>
+I wish Next year there is no distance. Only us.
+</div>
+
+</div>
+
+<script>
+
+// --- 1. MUSIC & AUTOPLAY LOGIC ---
+const bgMusic = document.getElementById("bgMusic");
+// Using a reliable Happy Birthday instrumental link
+bgMusic.src = "https://cdn.pixabay.com/download/audio/2022/08/02/audio_884fe92c21.mp3"; 
+
+// Attempt to play immediately (might be blocked by browser)
+window.onload = function() {
+    bgMusic.volume = 0.5;
+    bgMusic.play().catch(() => {
+        console.log("Autoplay blocked, will play on button click");
+    });
+};
+
+// --- 2. DECORATION GENERATOR ---
+const symbols = ['✨', '⭐', '💛', '✨', '🌟'];
+setInterval(() => {
+    const dec = document.createElement('div');
+    dec.classList.add('decoration');
+    dec.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
+    dec.style.left = Math.random() * 100 + 'vw';
+    dec.style.animationDuration = (Math.random() * 5 + 5) + 's';
+    document.body.appendChild(dec);
+    
+    setTimeout(() => { dec.remove(); }, 10000);
+}, 500);
+
+// --- 3. AUDIO HELPER FUNCTIONS ---
+function playKeySound() {
+    const keySound = document.getElementById("keySound");
+    keySound.currentTime = 0;
+    keySound.volume = 0.1; // Low volume so it's not annoying
+    keySound.play();
+}
+
+function enterLevel(){
+    document.getElementById("home").style.display="none";
+    document.getElementById("unlockSection").style.display="block";
+    
+    // Guarantee music plays on interaction
+    bgMusic.play();
+}
+
+/* 🔐 SECRET CODES */
+const codeMap = {
+    "birthday":"l1",
+    "february":"l2",
+    "college":"l3",
+    "level19":"l4",
+    "hug":"l5",
+    "maryam":"l6",
+    "ryalf":"l7",
+    "avengers":"l8",
+    "panther":"l9",
+    "august":"l10",
+    "vizag":"l11",
+    "specialday":"l12",
+    "love":"l13",
+    "us":"l14",
+    "forever":"l15",
+    "dreams":"l16",
+    "future":"l17",
+    "yoursforver":"l18",
+    "birthdayspecial":"l19"
+};
+
+let unlocked = new Set();
+let typingInterval; 
+
+function unlockLetter(){
+    let input = document.getElementById("codeInput").value.toLowerCase().trim();
+
+    if(codeMap[input]){
+        // Play Success Sound
+        let successSound = document.getElementById("successSound");
+        successSound.currentTime = 0;
+        successSound.volume = 0.5;
+        successSound.play();
+
+        document.getElementById("letterSection").style.display="block";
+
+        clearInterval(typingInterval);
+        let letters = document.getElementsByClassName("letter");
+        for(let i=0;i<letters.length;i++){
+            letters[i].style.display="none";
+            letters[i].classList.remove("active-letter");
+        }
+
+        let letterId = codeMap[input];
+        let letterDiv = document.getElementById(letterId);
+        
+        letterDiv.style.display="block";
+        
+        setTimeout(() => {
+            letterDiv.classList.add("active-letter");
+        }, 50);
+
+        // Word by Word Effect
+        let contentDiv = letterDiv.querySelector('.content');
+        let fullText = contentDiv.innerHTML;
+        contentDiv.innerHTML = "";
+        let words = fullText.split(" ");
+        let wordIndex = 0;
+
+        typingInterval = setInterval(() => {
+            if(wordIndex < words.length){
+                contentDiv.innerHTML += words[wordIndex] + " ";
+                wordIndex++;
+                
+                let typeSound = document.getElementById("typingSound");
+                typeSound.currentTime = 0;
+                typeSound.volume = 0.2;
+                typeSound.play().catch(e=> {});
+            } else {
+                clearInterval(typingInterval);
+            }
+        }, 80); // Slightly faster typing
+
+        unlocked.add(letterId);
+        document.getElementById("counter").innerText =
+            "Unlocked: " + unlocked.size + " / 19";
+
+        if(unlocked.size === 19){
+            document.getElementById("finalEffect").style.display="block";
+            document.getElementById("finalEffect").scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.getElementById("codeInput").value="";
+        document.getElementById("lockMessage").innerHTML="";
+        
+        setTimeout(() => {
+            letterDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
+        
+    }
+    else{
+        document.getElementById("lockMessage").innerHTML =
+            "<div class='lock'>🔒 Wrong Code</div>";
+    }
+}
+
+</script>
+
+</body>
+</html>
